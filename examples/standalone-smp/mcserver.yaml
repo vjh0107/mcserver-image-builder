@@ -1,0 +1,19 @@
+kind: Server
+name: smp
+source:
+  papermc:
+    version: "1.21.4"
+    build: 194
+
+plugins:
+  - name: LuckPerms
+    source:
+      jenkins:
+        url: https://ci.lucko.me
+        job: LuckPerms
+        artifact: "LuckPerms-Bukkit-*.jar"
+
+resources:
+  - source:
+      path: server.properties
+    mountPath: server.properties

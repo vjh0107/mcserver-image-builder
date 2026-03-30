@@ -1,0 +1,6 @@
+kind: Server
+name: test-server
+source:
+  url: https://example.com/paper.jar
+plugins:
+  - name: PluginA

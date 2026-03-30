@@ -1,0 +1,6 @@
+kind: Proxy
+name: test-proxy
+source:
+  papermc:
+    version: "3.4.0"
+    build: 460

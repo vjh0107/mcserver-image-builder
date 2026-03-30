@@ -1,0 +1,10 @@
+kind: Proxy
+name: {{.Name}}
+source:
+  papermc:
+    version: "3.4.0-SNAPSHOT"
+    build: 459
+
+plugins: []
+
+resources: []

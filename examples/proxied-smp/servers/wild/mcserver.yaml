@@ -1,0 +1,8 @@
+kind: Server
+name: wild
+components:
+  - components
+
+warm:
+  timeout: 10m
+  memory: 4G

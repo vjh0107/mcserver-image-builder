@@ -1,0 +1,31 @@
+version: 2
+
+builds:
+  - main: .
+    binary: mcserver
+    env:
+      - CGO_ENABLED=0
+    ldflags:
+      - -s -w -X go.junhyung.kr/mcserver-image-builder/internal/cli.Version={{.Version}}
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+
+archives:
+  - format: tar.gz
+
+checksum:
+  name_template: checksums.txt
+
+changelog:
+  sort: asc
+
+brews:
+  - repository:
+      owner: vjh0107
+      name: homebrew-tap
+    homepage: https://github.com/vjh0107/mcserver-image-builder
+    description: Cloud-native Docker image builder for Minecraft servers

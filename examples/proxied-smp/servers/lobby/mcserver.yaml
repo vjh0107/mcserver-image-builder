@@ -1,0 +1,4 @@
+kind: Server
+name: lobby
+components:
+  - components/base

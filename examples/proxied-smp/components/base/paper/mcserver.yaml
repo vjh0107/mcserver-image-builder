@@ -1,0 +1,22 @@
+kind: Component
+name: paper
+
+source:
+  papermc:
+    project: paper
+    version: "1.21.4"
+    build: 194
+
+warm:
+  enabled: true
+  timeout: 5m
+  memory: 2G
+
+resources:
+  - source:
+      path: ./server.properties
+    mountPath: server.properties
+  - source:
+      path: ./paper-global.yml
+    mountPath: config/paper-global.yml
+    stage: build

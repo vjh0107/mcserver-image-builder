@@ -1,0 +1,21 @@
+FROM {{ .BaseImage }}
+
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+RUN apk add --no-cache gettext
+WORKDIR /server
+RUN echo "eula=true" > eula.txt
+COPY server.jar ./
+{{ if .WarmCache -}}
+COPY libraries/ libraries/
+COPY cache/ cache/
+COPY versions/ versions/
+{{ end -}}
+COPY plugins/ plugins/
+{{ range .Files -}}
+COPY {{ .Src }} {{ .MountPath }}
+{{ end -}}
+RUN cp -r plugins/ .embedded-plugins/
+
+ENTRYPOINT ["/entrypoint.sh"]

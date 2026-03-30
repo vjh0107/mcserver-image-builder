@@ -1,0 +1,26 @@
+kind: Server
+name: test-server
+source:
+  url: https://example.com/paper.jar
+plugins:
+  - name: PluginA
+    source:
+      url: https://example.com/plugin-a.jar
+  - name: PluginB
+    source:
+      url: https://example.com/plugin-b.tgz
+    extract: true
+  - name: PluginC
+    source:
+      jenkins:
+        url: https://jenkins.example.com
+        job: plugin-c
+        artifact: "plugin-c-*.jar"
+resources:
+  - source:
+      url: https://example.com/world.tgz
+    mountPath: .embedded-world
+    extract: true
+  - source:
+      path: server.properties
+    mountPath: server.properties

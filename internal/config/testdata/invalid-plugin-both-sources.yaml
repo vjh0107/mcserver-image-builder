@@ -1,0 +1,12 @@
+kind: Server
+name: test-server
+source:
+  url: https://example.com/paper.jar
+plugins:
+  - name: PluginA
+    source:
+      url: https://example.com/plugin-a.jar
+      jenkins:
+        url: https://jenkins.example.com
+        job: test
+        artifact: "*.jar"

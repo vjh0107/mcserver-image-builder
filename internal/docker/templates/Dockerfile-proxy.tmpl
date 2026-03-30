@@ -1,0 +1,15 @@
+FROM {{ .BaseImage }}
+
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+RUN apk add --no-cache gettext
+WORKDIR /server
+COPY server.jar ./
+COPY plugins/ plugins/
+{{ range .Files -}}
+COPY {{ .Src }} {{ .MountPath }}
+{{ end -}}
+RUN cp -r plugins/ .embedded-plugins/
+
+ENTRYPOINT ["/entrypoint.sh"]

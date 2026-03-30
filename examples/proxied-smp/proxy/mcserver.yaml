@@ -1,0 +1,21 @@
+kind: Proxy
+name: proxy
+
+source:
+  papermc:
+    project: velocity
+    version: "3.4.0-SNAPSHOT"
+    build: 459
+
+plugins:
+  - name: LuckPerms
+    source:
+      jenkins:
+        url: https://ci.lucko.me
+        job: LuckPerms
+        artifact: "LuckPerms-Velocity-*.jar"
+
+resources:
+  - source:
+      path: ./velocity.toml
+    mountPath: velocity.toml

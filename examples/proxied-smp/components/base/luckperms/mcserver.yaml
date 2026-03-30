@@ -1,0 +1,18 @@
+kind: Component
+name: luckperms
+
+plugins:
+  - name: LuckPerms
+    source:
+      jenkins:
+        url: https://ci.lucko.me
+        job: LuckPerms
+        artifact: "LuckPerms-Bukkit-*.jar"
+    resources:
+      - source:
+          path: ./config.yml
+        mountPath: plugins/LuckPerms/config.yml
+        stage: build
+    warm:
+      artifacts:
+        - plugins/LuckPerms/libs

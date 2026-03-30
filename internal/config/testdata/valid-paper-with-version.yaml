@@ -1,0 +1,6 @@
+kind: Server
+name: test-server
+source:
+  papermc:
+    version: "1.21.4"
+    build: 194

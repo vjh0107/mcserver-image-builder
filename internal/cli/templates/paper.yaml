@@ -1,0 +1,10 @@
+kind: Server
+name: {{.Name}}
+source:
+  papermc:
+    version: "1.21.4"
+    build: 194
+
+plugins: []
+
+resources: []

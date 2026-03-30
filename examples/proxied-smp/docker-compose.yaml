@@ -1,0 +1,41 @@
+services:
+  mysql:
+    image: mysql:8
+    env_file: .env
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  redis:
+    image: redis:7-alpine
+
+  proxy:
+    image: proxy:latest
+    ports:
+      - "25577:25565"
+    env_file: .env
+    environment:
+      JAVA_MEMORY: "1G"
+    depends_on:
+      - lobby
+      - wild
+
+  lobby:
+    image: lobby:latest
+    env_file: .env
+    environment:
+      JAVA_MEMORY: "2G"
+    depends_on:
+      - mysql
+      - redis
+
+  wild:
+    image: wild:latest
+    env_file: .env
+    environment:
+      JAVA_MEMORY: "4G"
+    depends_on:
+      - mysql
+      - redis
+
+volumes:
+  mysql-data:

@@ -1,0 +1,4 @@
+kind: Server
+name: test-minimal
+source:
+  url: https://example.com/paper.jar

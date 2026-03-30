@@ -1,0 +1,157 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://go.junhyung.kr/mcserver-image-builder/schema/mcserver.schema.json",
+  "title": "mcserver.yaml",
+  "description": "Declarative Minecraft server/proxy Docker image build configuration",
+  "type": "object",
+  "required": ["kind", "name"],
+  "properties": {
+    "kind": {
+      "type": "string",
+      "enum": ["Server", "Proxy", "Component"],
+      "description": "Resource type. Server for game servers, Proxy for Velocity proxies, Component for reusable configuration fragments."
+    },
+    "name": {
+      "type": "string",
+      "description": "Unique name. Used as the Docker image name when --registry is specified."
+    },
+    "components": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Paths to component files or directories to merge. Directories are scanned recursively for mcserver.yaml files."
+    },
+    "source": { "$ref": "#/$defs/serverSource" },
+    "warm": { "$ref": "#/$defs/warmConfig" },
+    "plugins": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/plugin" }
+    },
+    "resources": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/resource" }
+    }
+  },
+  "examples": [
+    {
+      "kind": "Server",
+      "name": "lobby",
+      "source": { "papermc": { "version": "1.21.4", "build": 194 } },
+      "plugins": [
+        { "name": "LuckPerms", "source": { "jenkins": { "url": "https://ci.lucko.me", "job": "LuckPerms", "artifact": "LuckPerms-Bukkit-*.jar" } } }
+      ]
+    },
+    {
+      "kind": "Proxy",
+      "name": "proxy",
+      "source": { "papermc": { "version": "3.4.0-SNAPSHOT", "build": 459 } }
+    },
+    {
+      "kind": "Component",
+      "name": "shared-plugins",
+      "plugins": [
+        { "name": "LuckPerms", "source": { "jenkins": { "url": "https://ci.lucko.me", "job": "LuckPerms", "artifact": "LuckPerms-Bukkit-*.jar" } } }
+      ]
+    }
+  ],
+  "$defs": {
+    "serverSource": {
+      "type": "object",
+      "description": "Server/proxy JAR source. Exactly one of url, papermc, jenkins, or teamcity.",
+      "oneOf": [
+        { "required": ["url"], "properties": { "url": { "type": "string", "format": "uri" } }, "additionalProperties": false },
+        { "required": ["papermc"], "properties": { "papermc": { "$ref": "#/$defs/papermcSource" } }, "additionalProperties": false },
+        { "required": ["jenkins"], "properties": { "jenkins": { "$ref": "#/$defs/jenkinsSource" } }, "additionalProperties": false },
+        { "required": ["teamcity"], "properties": { "teamcity": { "$ref": "#/$defs/teamcitySource" } }, "additionalProperties": false }
+      ]
+    },
+    "downloadSource": {
+      "type": "object",
+      "description": "Download source. Exactly one of url, jenkins, or teamcity.",
+      "oneOf": [
+        { "required": ["url"], "properties": { "url": { "type": "string", "format": "uri" } }, "additionalProperties": false },
+        { "required": ["jenkins"], "properties": { "jenkins": { "$ref": "#/$defs/jenkinsSource" } }, "additionalProperties": false },
+        { "required": ["teamcity"], "properties": { "teamcity": { "$ref": "#/$defs/teamcitySource" } }, "additionalProperties": false }
+      ]
+    },
+    "resourceSource": {
+      "type": "object",
+      "description": "Resource source. Exactly one of path, url, jenkins, or teamcity.",
+      "oneOf": [
+        { "required": ["path"], "properties": { "path": { "type": "string", "description": "Host path relative to working directory. Use './' prefix for paths relative to the mcserver.yaml file." } }, "additionalProperties": false },
+        { "required": ["url"], "properties": { "url": { "type": "string", "format": "uri" } }, "additionalProperties": false },
+        { "required": ["jenkins"], "properties": { "jenkins": { "$ref": "#/$defs/jenkinsSource" } }, "additionalProperties": false },
+        { "required": ["teamcity"], "properties": { "teamcity": { "$ref": "#/$defs/teamcitySource" } }, "additionalProperties": false }
+      ]
+    },
+    "papermcSource": {
+      "type": "object",
+      "required": ["version", "build"],
+      "additionalProperties": false,
+      "properties": {
+        "project": { "type": "string", "enum": ["paper", "folia", "velocity"], "description": "PaperMC project name. Defaults to 'paper' for Server, 'velocity' for Proxy." },
+        "version": { "type": "string", "description": "Minecraft or Velocity version (e.g. '1.21.4', '3.4.0-SNAPSHOT')." },
+        "build": { "type": "integer", "minimum": 1, "description": "Build number from PaperMC." }
+      }
+    },
+    "jenkinsSource": {
+      "type": "object",
+      "required": ["url", "job", "artifact"],
+      "additionalProperties": false,
+      "properties": {
+        "url": { "type": "string", "format": "uri", "description": "Jenkins server URL." },
+        "job": { "type": "string", "description": "Jenkins job name." },
+        "build": { "type": "integer", "minimum": 1, "description": "Specific build number. Omit to use lastSuccessfulBuild." },
+        "artifact": { "type": "string", "description": "Artifact filename or glob pattern." }
+      }
+    },
+    "teamcitySource": {
+      "type": "object",
+      "required": ["url", "buildType", "artifact"],
+      "additionalProperties": false,
+      "properties": {
+        "url": { "type": "string", "format": "uri", "description": "TeamCity server URL." },
+        "buildType": { "type": "string", "description": "TeamCity build configuration ID." },
+        "build": { "type": "integer", "minimum": 1, "description": "Specific build ID. Omit to use lastSuccessful." },
+        "artifact": { "type": "string", "description": "Artifact file path." }
+      }
+    },
+    "plugin": {
+      "type": "object",
+      "required": ["name", "source"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "source": { "$ref": "#/$defs/downloadSource" },
+        "extract": { "type": "boolean", "default": false, "description": "Extract .tgz archive into plugins/ directory." },
+        "resources": { "type": "array", "items": { "$ref": "#/$defs/resource" } },
+        "warm": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "artifacts": { "type": "array", "items": { "type": "string" }, "description": "Paths generated during warm to cache." }
+          }
+        }
+      }
+    },
+    "resource": {
+      "type": "object",
+      "required": ["source", "mountPath"],
+      "additionalProperties": false,
+      "properties": {
+        "source": { "$ref": "#/$defs/resourceSource" },
+        "mountPath": { "type": "string", "description": "Destination path inside the container." },
+        "extract": { "type": "boolean", "default": false, "description": "Extract .tgz archive into mountPath directory." },
+        "stage": { "type": "string", "enum": ["all", "build", "warm"], "default": "all", "description": "When to apply: 'all' (warm+build), 'build' (build only), 'warm' (warm only)." }
+      }
+    },
+    "warmConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean", "description": "Enable warm cache. Defaults to true for Server, false for Proxy." },
+        "timeout": { "type": "string", "default": "5m", "description": "Maximum wait time for server startup during warm." },
+        "memory": { "type": "string", "default": "2G", "description": "JVM memory allocation for warm." }
+      }
+    }
+  }
+}
