@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 const DefaultBaseImage = "eclipse-temurin:21-jre-alpine"
@@ -30,8 +31,12 @@ func Build(opts BuildOptions) error {
 	return runDockerQuiet(args)
 }
 
-func Push(tag string) error {
-	return runDockerQuiet([]string{"push", tag})
+func Push(tag string, output io.Writer) error {
+	args := []string{"push", tag}
+	if output != nil {
+		return runDockerWithOutput(args, output)
+	}
+	return runDockerQuiet(args)
 }
 
 func EnsureAvailable() error {
@@ -42,11 +47,16 @@ func EnsureAvailable() error {
 }
 
 func runDockerWithOutput(args []string, output io.Writer) error {
+	var errBuf bytes.Buffer
 	cmd := exec.Command("docker", args...)
 	cmd.Stdout = output
-	cmd.Stderr = output
+	cmd.Stderr = io.MultiWriter(output, &errBuf)
 
 	if err := cmd.Run(); err != nil {
+		msg := strings.TrimSpace(errBuf.String())
+		if msg != "" {
+			return fmt.Errorf("docker %s: %s", args[0], msg)
+		}
 		return fmt.Errorf("docker %s: %w", args[0], err)
 	}
 	return nil

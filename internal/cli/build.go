@@ -363,7 +363,7 @@ func doBuild(n ui.Notifier, cfg *config.ServerConfig, configPath, workingDir, ta
 		step++
 		n.Start(step)
 		pushStart := time.Now()
-		if err := docker.Push(tag); err != nil {
+		if err := docker.Push(tag, n.LogWriter()); err != nil {
 			n.Error(step, err)
 			return err
 		}
