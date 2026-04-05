@@ -44,7 +44,7 @@ type teamCitySource struct {
 
 func (s *teamCitySource) resolvedBuildSpec() string {
 	if s.build > 0 {
-		return fmt.Sprintf("%d.id", s.build)
+		return fmt.Sprintf("%d:id", s.build)
 	}
 	return ".lastSuccessful"
 }
@@ -53,7 +53,11 @@ func (s *teamCitySource) download(client *http.Client, destPath string, onProgre
 	baseURL := strings.TrimRight(s.url, "/")
 	buildSpec := s.resolvedBuildSpec()
 
-	downloadURL := fmt.Sprintf("%s/repository/download/%s/%s/%s", baseURL, s.buildType, buildSpec, s.artifact)
+	authPath := "repository/download"
+	if os.Getenv("TEAMCITY_TOKEN") == "" {
+		authPath = "guestAuth/repository/download"
+	}
+	downloadURL := fmt.Sprintf("%s/%s/%s/%s/%s", baseURL, authPath, s.buildType, buildSpec, s.artifact)
 
 	req, err := http.NewRequest(http.MethodGet, downloadURL, nil)
 	if err != nil {
