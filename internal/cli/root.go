@@ -2,13 +2,16 @@ package cli
 
 import "github.com/spf13/cobra"
 
-var Version = "dev"
+var (
+	Version   = "dev"
+	BuildTime = "unknown"
+)
 
 func NewRootCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:          "mcserver",
 		Short:        "Declarative Docker image builder for Minecraft servers",
-		Version:      Version,
+		Version:      Version + " (built " + BuildTime + ")",
 		SilenceUsage: true,
 	}
 

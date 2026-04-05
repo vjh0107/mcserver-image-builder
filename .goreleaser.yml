@@ -6,7 +6,7 @@ builds:
     env:
       - CGO_ENABLED=0
     ldflags:
-      - -s -w -X go.junhyung.kr/mcserver-image-builder/internal/cli.Version={{.Version}}
+      - -s -w -X go.junhyung.kr/mcserver-image-builder/internal/cli.Version={{.Version}} -X go.junhyung.kr/mcserver-image-builder/internal/cli.BuildTime={{.Date}}
     goos:
       - linux
       - darwin
