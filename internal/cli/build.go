@@ -367,7 +367,8 @@ func doBuild(n ui.Notifier, cfg *config.ServerConfig, configPath, workingDir, ta
 			n.Error(step, err)
 			return err
 		}
-		n.Done(step, fmt.Sprintf("%.1fs", time.Since(pushStart).Seconds()))
+		registryURL := "https://" + strings.SplitN(tag, "/", 2)[0]
+		n.Done(step, fmt.Sprintf("(%s) %.1fs", registryURL, time.Since(pushStart).Seconds()))
 	}
 
 	n.Elapsed(fmt.Sprintf("%.1fs", time.Since(totalStart).Seconds()))
