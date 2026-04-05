@@ -34,6 +34,9 @@ func (w *tuiWriter) Write(p []byte) (int, error) {
 }
 
 func isTTY() bool {
+	if os.Getenv("NO_TUI") != "" {
+		return false
+	}
 	return isatty.IsTerminal(os.Stderr.Fd()) || isatty.IsCygwinTerminal(os.Stderr.Fd())
 }
 
