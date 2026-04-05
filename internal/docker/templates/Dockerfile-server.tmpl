@@ -16,6 +16,6 @@ COPY plugins/ plugins/
 {{ range .Files -}}
 COPY {{ .Src }} {{ .MountPath }}
 {{ end -}}
-RUN cp -r plugins/ .embedded-plugins/
+RUN ls plugins/*.jar 1>/dev/null 2>&1 && cp -r plugins/ .embedded-plugins/ || true
 
 ENTRYPOINT ["/entrypoint.sh"]

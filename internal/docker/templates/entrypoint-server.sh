@@ -55,7 +55,7 @@ if [ -d /server/.embedded-world ]; then
     fi
 fi
 
-if [ -d /server/.embedded-plugins ]; then
+if ls /server/.embedded-plugins/*.jar 1>/dev/null 2>&1; then
     if ! ls /server/plugins/*.jar 1>/dev/null 2>&1; then
         cp -r /server/.embedded-plugins/* /server/plugins/
     fi
